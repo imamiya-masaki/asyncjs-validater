@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scheduler API Test with User Action</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #log {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f4f4f4;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    #canvasContainer {
+      margin-top: 20px;
+      position: relative;
+      height: 200px;
+      width: 100%;
+      border: 1px solid #ccc;
+    }
+    #timelineInfo {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    canvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Scheduler API Test with User Action</h1>
+  <button id="startTest">Test Scheduler API</button>
+  <button id="userAction">User Action</button>
+  <div id="log"></div>
+  <div id="canvasContainer">
+    <canvas id="timelineCanvas" width="800" height="200"></canvas>
+  </div>
+  <div id="timelineInfo"></div>
+
+  <script>
+    const logData = [];
+    const taskColors = {
+      'schedulerAPI': 'blue',
+      'User Action': 'orange'
+    };
+    const lanes = {
+      'schedulerAPI': 50, // Y position for Scheduler API tasks
+      'User Action': 120   // Y position for User Action
+    };
+
+    // CPUを占有する非同期の重いタスク関数
+    async function heavyTask(durationMs) {
+      const start = performance.now();
+      while (performance.now() - start < durationMs) {
+        // CPU負荷をかけるためのループ
+      }
+      await Promise.resolve();  // 非同期処理を追加して、async functionとして動作させる
+    }
+
+    function logMessage(message, type, taskName, phase) {
+      const log = document.getElementById('log');
+      const time = performance.now().toFixed(2);
+      log.innerHTML += `<p>[${time} ms] ${message} (${phase})</p>`;
+      log.scrollTop = log.scrollHeight;
+
+      // Store log data for visualization
+      logData.push({ time: parseFloat(time), message, type, taskName, phase });
+
+      // Draw timeline when 'end' is logged
+      if (phase === 'end') {
+        drawTimeline();
+      }
+    }
+
+    async function runSchedulerTask() {
+      if ('scheduler' in window) {
+        for (let i = 1; i <= 3; i++) {
+          scheduler.postTask(async () => {
+            logMessage(`Scheduler task part ${i}`, 'schedulerAPI', `Task ${i}`, 'start');
+            await heavyTask(1000); // 1秒間CPUを占有
+            logMessage(`Scheduler task part ${i}`, 'schedulerAPI', `Task ${i}`, 'end');
+          });
+        }
+      } else {
+        alert('Scheduler API is not supported in this browser.');
+      }
+    }
+
+    function drawTimeline() {
+      const canvas = document.getElementById('timelineCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const timelineInfo = document.getElementById('timelineInfo');
+      timelineInfo.innerHTML = ''; // Clear previous logs
+
+      const startTime = logData[0].time;
+      const totalDuration = logData[logData.length - 1].time - startTime;
+      const scaleX = canvas.width / totalDuration;
+
+      const taskMap = new Map();
+
+      logData.forEach((log) => {
+        if (log.phase === 'start') {
+          taskMap.set(log.taskName, { startTime: log.time });
+        } else if (log.phase === 'end') {
+          const task = taskMap.get(log.taskName);
+          if (task) {
+            task.endTime = log.time;
+            drawTaskBar(task, log.type, log.taskName, startTime, ctx, scaleX);
+            timelineInfo.innerHTML += `<p><span style="color:${taskColors[log.type]};">${log.taskName}:</span> ${task.startTime.toFixed(2)} ms - ${task.endTime.toFixed(2)} ms</p>`;
+            taskMap.delete(log.taskName);
+          }
+        }
+      });
+    }
+
+    function drawTaskBar(task, type, taskName, globalStartTime, ctx, scaleX) {
+      const xStart = (task.startTime - globalStartTime) * scaleX;
+      const xEnd = (task.endTime - globalStartTime) * scaleX;
+      const color = taskColors[type] || 'black';
+      const yPosition = lanes[type]; // Use lane for schedulerAPI or User Action
+
+      // Draw bar on the canvas
+      ctx.fillStyle = color;
+      ctx.fillRect(xStart, yPosition, xEnd - xStart, 30); // Adjust height of bars
+
+      // Draw timestamps
+      ctx.fillStyle = 'black';
+      ctx.fillText(`${task.startTime.toFixed(2)} ms`, xStart + 5, yPosition - 10); // Adjust text position
+      ctx.fillText(`${task.endTime.toFixed(2)} ms`, xEnd + 5, yPosition - 10);
+    }
+
+    // Handle user action and log its timing with start and end
+    document.getElementById('userAction').addEventListener('click', async () => {
+      logMessage('User action', 'User Action', 'User Action Task', 'start');
+      await heavyTask(500); // 0.5秒のCPU負荷の処理
+      logMessage('User action', 'User Action', 'User Action Task', 'end');
+    });
+
+    document.getElementById('startTest').addEventListener('click', runSchedulerTask);
+  </script>
+</body>
+</html>
