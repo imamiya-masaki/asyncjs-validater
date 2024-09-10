@@ -70,6 +70,10 @@
       }
       await Promise.resolve();  // 非同期処理を追加して、async functionとして動作させる
     }
+    
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     function logMessage(message, type, taskName, phase) {
       const log = document.getElementById('log');
@@ -97,6 +101,7 @@
       for (let i = 1; i <= 3; i++) {
         logMessage(`Async function part ${i}`, 'asyncFunction', `Task ${i}`, 'start');
         heavyTask(1000); // 1秒間CPUを占有
+        await sleep(1);
         logMessage(`Async function part ${i}`, 'asyncFunction', `Task ${i}`, 'end');
       }
     }

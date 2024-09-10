@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Async Function Test with Delayed Heavy Action</title>
+  <title>Scheduler API Test with Delayed Heavy Action</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -40,8 +40,8 @@
   </style>
 </head>
 <body>
-  <h1>Async Function Test with Delayed Heavy Action</h1>
-  <button id="startTest">Test Async Function</button>
+  <h1>Scheduler API Test with Delayed Heavy Action</h1>
+  <button id="startTest">Test Scheduler API</button>
   <button id="userAction">User Action</button>
   <div id="log"></div>
   <div id="canvasContainer">
@@ -52,12 +52,12 @@
   <script>
     const logData = [];
     const taskColors = {
-      'asyncFunction': 'green',
+      'schedulerAPI': 'blue',
       'User Action': 'orange',
       'Heavy Action': 'red'
     };
     const lanes = {
-      'asyncFunction': 50, // Y position for Async Function tasks
+      'schedulerAPI': 50, // Y position for Scheduler API tasks
       'User Action': 120,  // Y position for User Action
       'Heavy Action': 190  // Y position for Heavy Action
     };
@@ -86,7 +86,7 @@
       }
     }
 
-    async function runAsyncFunction() {
+    async function runSchedulerTask() {
       // 1250ms後にheavyActionを実行
       setTimeout(async () => {
         logMessage('Heavy Action', 'Heavy Action', 'Heavy Action Task', 'start');
@@ -94,10 +94,18 @@
         logMessage('Heavy Action', 'Heavy Action', 'Heavy Action Task', 'end');
       }, 1250);
 
-      for (let i = 1; i <= 3; i++) {
-        logMessage(`Async function part ${i}`, 'asyncFunction', `Task ${i}`, 'start');
-        heavyTask(1000); // 1秒間CPUを占有
-        logMessage(`Async function part ${i}`, 'asyncFunction', `Task ${i}`, 'end');
+      if ('scheduler' in window) {
+        for (let i = 1; i <= 3; i++) {
+          scheduler.postTask(async () => {
+            logMessage(`Scheduler task part ${i}`, 'schedulerAPI', `Task ${i}`, 'start');
+            await heavyTask(1000); // 1秒間CPUを占有
+            logMessage(`Scheduler task part ${i}`, 'schedulerAPI', `Task ${i}`, 'end');
+          }, {
+            priority: "background"
+          });
+        }
+      } else {
+        alert('Scheduler API is not supported in this browser.');
       }
     }
 
@@ -134,7 +142,7 @@
       const xStart = (task.startTime - globalStartTime) * scaleX;
       const xEnd = (task.endTime - globalStartTime) * scaleX;
       const color = taskColors[type] || 'black';
-      const yPosition = lanes[type]; // Use lane for asyncFunction, User Action, or Heavy Action
+      const yPosition = lanes[type]; // Use lane for schedulerAPI, User Action, or Heavy Action
 
       // Draw bar on the canvas
       ctx.fillStyle = color;
@@ -153,7 +161,7 @@
       logMessage('User action', 'User Action', 'User Action Task', 'end');
     });
 
-    document.getElementById('startTest').addEventListener('click', runAsyncFunction);
+    document.getElementById('startTest').addEventListener('click', runSchedulerTask);
   </script>
 </body>
 </html>
