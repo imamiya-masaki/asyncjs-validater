@@ -63,12 +63,11 @@
     };
 
     // CPUを占有する非同期の重いタスク関数
-    async function heavyTask(durationMs) {
+    function heavyTask(durationMs) {
       const start = performance.now();
       while (performance.now() - start < durationMs) {
         // CPU負荷をかけるためのループ
       }
-      await Promise.resolve();  // 非同期処理を追加して、async functionとして動作させる
     }
 
     function logMessage(message, type, taskName, phase) {
@@ -90,13 +89,13 @@
       // 1250ms後にheavyActionを実行
       setTimeout(async () => {
         logMessage('Heavy Action', 'Heavy Action', 'Heavy Action Task', 'start');
-        await heavyTask(1000); // 1秒間のCPU負荷
+        heavyTask(1000); // 1秒間のCPU負荷
         logMessage('Heavy Action', 'Heavy Action', 'Heavy Action Task', 'end');
       }, 1250);
 
       for (let i = 1; i <= 3; i++) {
         logMessage(`Async function part ${i}`, 'asyncFunction', `Task ${i}`, 'start');
-        heavyTask(1000); // 1秒間CPUを占有
+        (async() => heavyTask(1000))(); // 1秒間CPUを占有
         logMessage(`Async function part ${i}`, 'asyncFunction', `Task ${i}`, 'end');
       }
     }
@@ -149,7 +148,7 @@
     // Handle user action and log its timing with start and end
     document.getElementById('userAction').addEventListener('click', async () => {
       logMessage('User action', 'User Action', 'User Action Task', 'start');
-      await heavyTask(500); // 0.5秒のCPU負荷の処理
+      heavyTask(500); // 0.5秒のCPU負荷の処理
       logMessage('User action', 'User Action', 'User Action Task', 'end');
     });
 
