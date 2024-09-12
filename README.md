@@ -11,3 +11,21 @@ scheduler (yield) => usettaskが割り込まれる
 
 queuemicrotask => そのまま実行されてしまう (CPUを独占)
 queuemicrotask-withtimeout => timeoutが差し込まれるタイミングで別のタスクにCPUを明け渡す(timeoutから復帰するのは、すべてのタスクが終了したとき)
+
+requestidlecallback => 最初の一度目は、idle状態なので実行されるが、それ以外では、タスクの優先度を遅くする
+
+[/queuemicrotask-sleep.html](/queuemicrotask-sleep.html)
+
+[/queuemicrotask.html](/queuemicrotask.html)
+
+[/requestidlecallback.html](/requestidlecallback.html)
+
+[/scheduler-background](/scheduler-background.html)
+
+[/scheduler-yield](/scheduler-yield.html)
+
+[/scheduler](/scheduler.html)
+
+[/simple-async-withtimeout](/simple-async-withtimeout.html)
+
+[simple-async](/simple-async.html)
