@@ -90,18 +90,19 @@
     }
 
     async function runAsyncFunction() {
-      // 1250ms後にheavyActionを実行
+      // 1000ms後にheavyActionを実行
       setTimeout(async () => {
         logMessage('Heavy Action', 'Heavy Action', 'Heavy Action Task', 'start');
         heavyTask(1000); // 1秒間のCPU負荷
         logMessage('Heavy Action', 'Heavy Action', 'Heavy Action Task', 'end');
-      }, 1250);
+      }, 1000);
 
       for (let i = 1; i <= 3; i++) {
-        logMessage(`Async function part ${i}`, 'asyncFunction', `Task ${i}`, 'start');
-        (async() => heavyTask(1000))(); // 1秒間CPUを占有
-        await sleep(1);
-        logMessage(`Async function part ${i}`, 'asyncFunction', `Task ${i}`, 'end');
+        setTimeout(async() => {
+          logMessage(`Async function part ${i}`, 'asyncFunction', `Task ${i}`, 'start');
+          heavyTask(1000);
+          logMessage(`Async function part ${i}`, 'asyncFunction', `Task ${i}`, 'end');
+        }, 0); // 1秒間CPUを占有
       }
     }
 
