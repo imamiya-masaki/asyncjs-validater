@@ -1,6 +1,5 @@
+[pages](https://imamiya-masaki.github.io/asyncjs-validater/)
 # 概要
-
-pages: https://imamiya-masaki.github.io/asyncjs-validater/
 
 scheduler API とか async とか microtask idlecallbackとかややこしいから調べる
 基本GPT産
@@ -35,4 +34,4 @@ requestidlecallback => 最初の一度目は、idle状態なので実行され�
 
 [simple-async](/simple-async.html)
 
-[timeoutonly](/timeoutonly.html)
+[sleeponly](/sleeponly.html)
