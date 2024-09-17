@@ -1,4 +1,7 @@
 # 概要
+
+pages: https://imamiya-masaki.github.io/asyncjs-validater/
+
 scheduler API とか async とか microtask idlecallbackとかややこしいから調べる
 基本GPT産
 
