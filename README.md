@@ -35,3 +35,5 @@ requestidlecallback => 最初の一度目は、idle状態なので実行され�
 [simple-async](/simple-async.html)
 
 [sleeponly](/sleeponly.html)
+
+[simple-async-withtimeout-withsleep](/simple-async-withtimeout-withsleep.html)
