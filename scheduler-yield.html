@@ -93,15 +93,11 @@
         logMessage('Heavy Action', 'Heavy Action', 'Heavy Action Task', 'end');
       }, 1000);
 
-      if ('scheduler' in window) {
-        for (let i = 1; i <= 3; i++) {
-          logMessage(`Scheduler task part ${i}`, 'schedulerAPI', `Task ${i}`, 'start');
-          heavyTask(1000); // 1秒間CPUを占有
-          await scheduler.yield();
-          logMessage(`Scheduler task part ${i}`, 'schedulerAPI', `Task ${i}`, 'end');
-        }
-      } else {
-        alert('Scheduler API is not supported in this browser.');
+      for (let i = 1; i <= 3; i++) {
+        logMessage(`Scheduler task part ${i}`, 'schedulerAPI', `Task ${i}`, 'start');
+        heavyTask(1000); // 1秒間CPUを占有
+        await scheduler.yield();
+        logMessage(`Scheduler task part ${i}`, 'schedulerAPI', `Task ${i}`, 'end');
       }
     }
 

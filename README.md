@@ -28,7 +28,7 @@ requestidlecallback => 最初の一度目は、idle状態なので実行され�
 
 [/scheduler-yield](/scheduler-yield.html)
 
-[/scheduler](/scheduler.html)
+[/scheduler-user-visible](/scheduler-user-visible.html)
 
 [/simple-async-withtimeout](/simple-async-withtimeout.html)
 
