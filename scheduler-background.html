@@ -85,7 +85,7 @@
       }
     }
 
-    async function runSchedulerTask() {
+    async function runAsyncFunction() {
       // 1000ms後にheavyActionを実行
       setTimeout(async () => {
         logMessage('Heavy Action', 'Heavy Action', 'Heavy Action Task', 'start');
@@ -156,7 +156,7 @@
       logMessage('User action', 'User Action', 'User Action Task', 'end');
     });
 
-    document.getElementById('startTest').addEventListener('click', runSchedulerTask);
+    document.getElementById('startTest').addEventListener('click', runAsyncFunction);
   </script>
 </body>
 </html>
